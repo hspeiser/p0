@@ -340,6 +340,13 @@ class GamepadControllerHID(InputController):
         # Button states
         self.buttons = {}
 
+        # Auto-calibration for Xbox controllers (center values vary per controller)
+        self.calibrated = False
+        self.lx_center = 32767
+        self.ly_center = 32767
+        self.rx_center = 32767
+        self.ry_center = 32767
+
     def find_device(self):
         """Look for the gamepad device by vendor and product ID."""
         import hid
@@ -347,7 +354,7 @@ class GamepadControllerHID(InputController):
         devices = hid.enumerate()
         for device in devices:
             device_name = device["product_string"]
-            if any(controller in device_name for controller in ["Logitech", "Xbox", "PS4", "PS5"]):
+            if any(controller in device_name for controller in ["Logitech", "Xbox", "PS4", "PS5", "Controller"]):
                 return device
 
         logging.error(
@@ -374,6 +381,11 @@ class GamepadControllerHID(InputController):
             product = self.device.get_product_string()
             logging.info(f"Connected to {manufacturer} {product}")
 
+            # Auto-calibrate Xbox controllers (they have varying center values)
+            vendor_id = self.device_info.get("vendor_id", 0)
+            if vendor_id == 0x045e:  # Microsoft/Xbox
+                self._calibrate_xbox()
+
             logging.info("Gamepad controls (HID mode):")
             logging.info("  Left analog stick: Move in X-Y plane")
             logging.info("  Right analog stick: Move in Z axis (vertical)")
@@ -385,6 +397,45 @@ class GamepadControllerHID(InputController):
             logging.error(f"Error opening gamepad: {e}")
             logging.error("You might need to run this with sudo/admin privileges on some systems")
             self.running = False
+
+    def _calibrate_xbox(self):
+        """Auto-calibrate Xbox controller by reading center values when sticks are at rest."""
+        import struct
+        import time
+
+        logging.info("Calibrating Xbox controller - DON'T TOUCH THE STICKS!")
+
+        # Wake up the controller by reading any data
+        for _ in range(100):
+            data = self.device.read(64)
+            if data:
+                break
+            time.sleep(0.01)
+
+        if not data:
+            logging.warning("No controller data during calibration - using defaults")
+            return
+
+        # Wait for sticks to settle
+        time.sleep(0.5)
+
+        # Read several samples and use the last stable one
+        samples = []
+        for _ in range(30):
+            data = self.device.read(64)
+            if data and len(data) >= 18:
+                samples.append(data)
+            time.sleep(0.02)
+
+        if samples:
+            data = samples[-1]
+            self.lx_center = struct.unpack('<H', bytes(data[10:12]))[0]
+            self.ly_center = struct.unpack('<H', bytes(data[12:14]))[0]
+            self.rx_center = struct.unpack('<H', bytes(data[14:16]))[0]
+            self.ry_center = struct.unpack('<H', bytes(data[16:18]))[0]
+            logging.info(f"Calibrated centers: LX={self.lx_center}, LY={self.ly_center}, RX={self.rx_center}, RY={self.ry_center}")
+
+        self.calibrated = True
 
     def stop(self):
         """Close the HID device connection."""
@@ -402,15 +453,53 @@ class GamepadControllerHID(InputController):
 
     def _update(self):
         """Read and process the latest gamepad data."""
+        import struct
+
         if not self.device or not self.running:
             return
 
         try:
             # Read data from the gamepad
             data = self.device.read(64)
-            # Interpret gamepad data - this will vary by controller model
-            # These offsets are for the Logitech RumblePad 2
-            if data and len(data) >= 8:
+            if not data:
+                return
+
+            # Detect controller type by vendor ID
+            vendor_id = self.device_info.get("vendor_id", 0) if self.device_info else 0
+
+            # Xbox One Controller (Microsoft VID 0x045e)
+            if vendor_id == 0x045e and len(data) >= 18:
+                # Xbox One Controller byte mapping:
+                # Bytes 10-11: Left stick X (unsigned 16-bit, center ~32767)
+                # Bytes 12-13: Left stick Y
+                # Bytes 14-15: Right stick X
+                # Bytes 16-17: Right stick Y
+                lx_raw = struct.unpack('<H', bytes(data[10:12]))[0]
+                ly_raw = struct.unpack('<H', bytes(data[12:14]))[0]
+                rx_raw = struct.unpack('<H', bytes(data[14:16]))[0]
+                ry_raw = struct.unpack('<H', bytes(data[16:18]))[0]
+
+                # Normalize to -1.0 to 1.0 using calibrated centers
+                self.left_x = max(-1, min(1, (lx_raw - self.lx_center) / 32767.0))
+                self.left_y = max(-1, min(1, (ly_raw - self.ly_center) / 32767.0))
+                self.right_x = max(-1, min(1, (rx_raw - self.rx_center) / 32767.0))
+                self.right_y = max(-1, min(1, (ry_raw - self.ry_center) / 32767.0))
+
+                # Apply deadzone
+                self.left_x = 0 if abs(self.left_x) < self.deadzone else self.left_x
+                self.left_y = 0 if abs(self.left_y) < self.deadzone else self.left_y
+                self.right_x = 0 if abs(self.right_x) < self.deadzone else self.right_x
+                self.right_y = 0 if abs(self.right_y) < self.deadzone else self.right_y
+
+                # Xbox One buttons are in byte 4
+                # Bit mapping varies, but common: A=0, B=1, X=2, Y=3, LB=4, RB=5
+                buttons = data[4] if len(data) > 4 else 0
+
+                # TODO: Map Xbox One buttons properly if needed
+                self.episode_end_status = None
+
+            # Logitech and other controllers (original code)
+            elif len(data) >= 8:
                 # Normalize joystick values from 0-255 to -1.0-1.0
                 self.left_y = (data[1] - 128) / 128.0
                 self.left_x = (data[2] - 128) / 128.0
