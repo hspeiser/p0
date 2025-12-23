@@ -1,0 +1,11 @@
+[package]
+name = "arm_visualization"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+clap = { version = "4.5.53", features = ["derive"] }
+emath = "0.33.3"
+glam = "0.30.9"
+rerun = { version = "0.28.1", features = ["clap", "data_loaders"] }
