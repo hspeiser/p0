@@ -9,3 +9,4 @@ clap = { version = "4.5.53", features = ["derive"] }
 emath = "0.33.3"
 glam = "0.30.9"
 rerun = { version = "0.28.1", features = ["clap", "data_loaders"] }
+serde_json = "1.0.147"
