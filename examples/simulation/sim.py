@@ -5,11 +5,14 @@ from lerobot.utils.rotation import Rotation
 import numpy as np
 joints = ["Pan", "Proximal", "Distal", "Wrist","Roll", "Gripper"]
 kinematics = rk("../../rerun_arm/robot.urdf", "jaw_base", joints)
-positions = np.array([0, 0, 0, 0, 0])
+positions = np.array([0, 0, 0, 0, 0, 0])
 t_des = np.eye(4, dtype=float)
 t_des[:3, :3] = Rotation.from_rotvec(np.array([0, .14/2.30, 3.14/2.0],  dtype=float)).as_matrix()
 t_des[:3, 3] = np.array([0, 0, 0.2], dtype=float)
 thing2 = kinematics.inverse_kinematics(positions, t_des)
+
+final_transform = kinematics.forward_kinematics(thing2)
+print("final pos, forward kinematics" , final_transform[:3, 3])
 print(thing2)
 import json
 # define command line interface
@@ -22,11 +25,9 @@ args = parser.parse_args()
 with socket(AF_INET, SOCK_DGRAM) as client_socket:
     # send message to server
     print(f'Sending message to {"localhost"}:{9999}')
-    joint = input("Joint to sweep")
-    for x in range(-90, 90):
-        client_socket.sendto(json.dumps({joint: x}).encode(), ("localhost", 9999))
-    # message = {}
-    # for thing in range(0,6):
-    #     message[joints[thing]] = thing2[thing]
-    # client_socket.sendto(json.dumps(message).encode(), ("localhost", 9999))
+    # for x in range(-90, 90):
+    message = {}
+    for thing in range(0,6):
+        message[joints[thing]] = np.deg2rad(thing2[thing])
+    client_socket.sendto(json.dumps(message).encode(), ("localhost", 9999))
     
