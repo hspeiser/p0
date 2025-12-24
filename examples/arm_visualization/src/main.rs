@@ -27,7 +27,7 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn run(rec: &rerun::RecordingStream, _args: &Args) -> anyhow::Result<()> {
-    let urdf_path = "examples/rust/animated_urdf/data/so100.urdf";
+    let urdf_path = "../../rerun_arm/robot.urdf";
 
     // Log the URDF file one, as a static resource:
     rec.log_file_from_path(urdf_path, None, true)?;
@@ -48,6 +48,13 @@ fn run(rec: &rerun::RecordingStream, _args: &Args) -> anyhow::Result<()> {
                     -1.0..=1.0,
                     joint.limit.lower..=joint.limit.upper,
                 );
+
+                // Plot the joint angle over time - each joint gets its own path for toggling
+                // The joint name is used in the path so each joint can be toggled independently
+                rec.log(
+                    format!("plots/joint_angles/{}", joint.name),
+                    &rerun::Scalars::new([dynamic_angle]),
+                )?;
 
                 // Compute the full rotation for this joint.
                 // TODO(michael): we could make this a bit nicer with a better URDF utility.
