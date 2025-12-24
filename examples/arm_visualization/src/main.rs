@@ -136,9 +136,13 @@ fn run(rec: &rerun::RecordingStream, _args: &Args) -> anyhow::Result<()> {
                 let dynamic_angle = {
                     let guard = joint_commands.lock().unwrap();
                     if let Some(&cmd_rad) = guard.get(&joint.name) {
-                        println!("got angle");
+                        // println!("got angle");
                         // Clamp to joint limits too
-                        emath::remap(cmd_rad, -90.0..=90.0, joint.limit.lower..=joint.limit.upper)
+                        emath::remap(
+                            cmd_rad,
+                            (-3.14 / 2.0)..=(3.14 / 2.0),
+                            joint.limit.lower..=joint.limit.upper,
+                        )
                     } else {
                         continue;
                     }
