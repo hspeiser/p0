@@ -1,0 +1,381 @@
+<?xml version="1.0" ?>
+<!-- Generated using onshape-to-robot -->
+<!-- Onshape https://cad.onshape.com/documents/43491932275b53e2305e97db/w/d814ed88cef695aa7ee44ba8/e/e86cb7124d568be13dc38195 -->
+<robot name="henry-robot">
+  <!-- Link base -->
+  <link name="base">
+    <inertial>
+      <origin xyz="-0.00918088 -8.76425e-08 0.0255171" rpy="0 0 0"/>
+      <mass value="0.356204"/>
+      <inertia ixx="0.000365541" ixy="8.94999e-10" ixz="6.16182e-05" iyy="0.000495338" iyz="5.18339e-10" izz="0.000512779"/>
+    </inertial>
+    <!-- Part sts3215_03a -->
+    <visual>
+      <origin xyz="0.00219533 -1.38778e-17 0.04745" rpy="-1.79714e-16 2.22045e-16 1.46241e-16"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a.stl"/>
+      </geometry>
+      <material name="sts3215_03a_material">
+        <color rgba="0.627451 0.627451 0.627451 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.00219533 -1.38778e-17 0.04745" rpy="-1.79714e-16 2.22045e-16 1.46241e-16"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part base -->
+    <visual>
+      <origin xyz="0.00219533 -1.38778e-17 0.04945" rpy="-1.79714e-16 2.22045e-16 1.46241e-16"/>
+      <geometry>
+        <mesh filename="assets/base.stl"/>
+      </geometry>
+      <material name="base_material">
+        <color rgba="0.768627 0.886275 0.952941 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.00219533 -1.38778e-17 0.04945" rpy="-1.79714e-16 2.22045e-16 1.46241e-16"/>
+      <geometry>
+        <mesh filename="assets/base.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part part_5 -->
+    <visual>
+      <origin xyz="0.00229533 0 0.05005" rpy="-1.79714e-16 2.22045e-16 1.46241e-16"/>
+      <geometry>
+        <mesh filename="assets/part_5.stl"/>
+      </geometry>
+      <material name="part_5_material">
+        <color rgba="0.980392 0.713725 0.00392157 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.00229533 0 0.05005" rpy="-1.79714e-16 2.22045e-16 1.46241e-16"/>
+      <geometry>
+        <mesh filename="assets/part_5.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part part_3 -->
+    <visual>
+      <origin xyz="0.00224533 0 0.051385" rpy="-1.79714e-16 2.22045e-16 1.46241e-16"/>
+      <geometry>
+        <mesh filename="assets/part_3.stl"/>
+      </geometry>
+      <material name="part_3_material">
+        <color rgba="0.972549 0.529412 0.00392157 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.00224533 0 0.051385" rpy="-1.79714e-16 2.22045e-16 1.46241e-16"/>
+      <geometry>
+        <mesh filename="assets/part_3.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link sts3215_03a -->
+  <link name="sts3215_03a">
+    <inertial>
+      <origin xyz="0.029455 -0.00011589 0.0421552" rpy="0 0 0"/>
+      <mass value="0.139941"/>
+      <inertia ixx="0.000116615" ixy="2.05569e-08" ixz="-4.17973e-06" iyy="0.000120573" iyz="5.95824e-07" izz="3.47581e-05"/>
+    </inertial>
+    <!-- Part part_4 -->
+    <visual>
+      <origin xyz="-0.0125 -2.14313e-19 0.0177" rpy="3.37738e-33 -2.38875e-39 1.17233e-32"/>
+      <geometry>
+        <mesh filename="assets/part_4.stl"/>
+      </geometry>
+      <material name="part_4_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0125 -2.14313e-19 0.0177" rpy="3.37738e-33 -2.38875e-39 1.17233e-32"/>
+      <geometry>
+        <mesh filename="assets/part_4.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part sts3215_03a_2 -->
+    <visual>
+      <origin xyz="0.03072 -0.000299995 0.07023" rpy="1.5708 -1.5708 0"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__2.stl"/>
+      </geometry>
+      <material name="sts3215_03a_2_material">
+        <color rgba="0.627451 0.627451 0.627451 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.03072 -0.000299995 0.07023" rpy="1.5708 -1.5708 0"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__2.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link proximal_arm -->
+  <link name="proximal_arm">
+    <inertial>
+      <origin xyz="0.0943975 -0.0066167 0.0177389" rpy="0 0 0"/>
+      <mass value="0.111593"/>
+      <inertia ixx="3.6234e-05" ixy="2.03429e-05" ixz="-1.70246e-06" iyy="0.000195187" iyz="3.92858e-07" izz="0.000195032"/>
+    </inertial>
+    <!-- Part sts3215_03a_3 -->
+    <visual>
+      <origin xyz="0.12212 -0.01736 0.018" rpy="-6.21725e-15 3.09706e-14 -1.5708"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__2.stl"/>
+      </geometry>
+      <material name="sts3215_03a_3_material">
+        <color rgba="0.627451 0.627451 0.627451 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.12212 -0.01736 0.018" rpy="-6.21725e-15 3.09706e-14 -1.5708"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part proximal_arm -->
+    <visual>
+      <origin xyz="0 0.0125 0.0177" rpy="-2.67122e-30 -4.58656e-28 -1.5708"/>
+      <geometry>
+        <mesh filename="assets/proximal_arm.stl"/>
+      </geometry>
+      <material name="proximal_arm_material">
+        <color rgba="0.231373 0.380392 0.705882 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0.0125 0.0177" rpy="-2.67122e-30 -4.58656e-28 -1.5708"/>
+      <geometry>
+        <mesh filename="assets/proximal_arm.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link distal_arm -->
+  <link name="distal_arm">
+    <inertial>
+      <origin xyz="0.0923489 -0.0037206 0.0174244" rpy="0 0 0"/>
+      <mass value="0.122012"/>
+      <inertia ixx="3.52568e-05" ixy="1.16504e-05" ixz="-1.54927e-06" iyy="0.000204564" iyz="8.3463e-08" izz="0.000188901"/>
+    </inertial>
+    <!-- Part sts3215_03a_4 -->
+    <visual>
+      <origin xyz="0.12273 -0.00735999 0.01795" rpy="3.20022e-13 -1.085e-13 -3.75859e-13"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__3.stl"/>
+      </geometry>
+      <material name="sts3215_03a_4_material">
+        <color rgba="0.627451 0.627451 0.627451 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.12273 -0.00735999 0.01795" rpy="3.20022e-13 -1.085e-13 -3.75859e-13"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__3.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part distal_arm -->
+    <visual>
+      <origin xyz="1.38778e-17 0.0125 0.0177" rpy="-1.25944e-16 7.98198e-30 -1.5708"/>
+      <geometry>
+        <mesh filename="assets/distal_arm.stl"/>
+      </geometry>
+      <material name="distal_arm_material">
+        <color rgba="0.615686 0.811765 0.929412 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="1.38778e-17 0.0125 0.0177" rpy="-1.25944e-16 7.98198e-30 -1.5708"/>
+      <geometry>
+        <mesh filename="assets/distal_arm.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part part_3_2 -->
+    <visual>
+      <origin xyz="1.55431e-15 0.0125 0.0179" rpy="-6.23217e-15 1.16018e-14 -1.5708"/>
+      <geometry>
+        <mesh filename="assets/part_3__2.stl"/>
+      </geometry>
+      <material name="part_3_2_material">
+        <color rgba="0.647059 0.647059 0.647059 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="1.55431e-15 0.0125 0.0179" rpy="-6.23217e-15 1.16018e-14 -1.5708"/>
+      <geometry>
+        <mesh filename="assets/part_3__2.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link wrist_arm -->
+  <link name="wrist_arm">
+    <inertial>
+      <origin xyz="0.0343734 -4.34681e-05 0.0304032" rpy="0 0 0"/>
+      <mass value="0.104138"/>
+      <inertia ixx="3.97419e-05" ixy="4.78125e-08" ixz="-8.63637e-06" iyy="6.0767e-05" iyz="2.47486e-09" izz="3.82884e-05"/>
+    </inertial>
+    <!-- Part sts3215_03a_5 -->
+    <visual>
+      <origin xyz="0.0448042 -0.000100007 0.0306449" rpy="1.05906e-12 1.5708 0"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__4.stl"/>
+      </geometry>
+      <material name="sts3215_03a_5_material">
+        <color rgba="0.627451 0.627451 0.627451 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0448042 -0.000100007 0.0306449" rpy="1.05906e-12 1.5708 0"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__4.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part wrist_arm -->
+    <visual>
+      <origin xyz="-0.0125 2.77556e-17 0.0177" rpy="-8.9821e-30 -1.28193e-16 1.6593e-28"/>
+      <geometry>
+        <mesh filename="assets/wrist_arm.stl"/>
+      </geometry>
+      <material name="wrist_arm_material">
+        <color rgba="0.917647 0.917647 0.917647 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0125 2.77556e-17 0.0177" rpy="-8.9821e-30 -1.28193e-16 1.6593e-28"/>
+      <geometry>
+        <mesh filename="assets/wrist_arm.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link jaw_base -->
+  <link name="jaw_base">
+    <inertial>
+      <origin xyz="-0.000511042 8.21146e-05 -0.0306006" rpy="0 0 0"/>
+      <mass value="0.114706"/>
+      <inertia ixx="6.10283e-05" ixy="-3.97206e-07" ixz="-1.16462e-05" iyy="7.67988e-05" iyz="-4.87331e-08" izz="4.52721e-05"/>
+    </inertial>
+    <!-- Part sts3215_03a_6 -->
+    <visual>
+      <origin xyz="0.0126 0.000249997 -0.0252" rpy="-1.5708 -2.15099e-13 1.86891e-13"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__5.stl"/>
+      </geometry>
+      <material name="sts3215_03a_6_material">
+        <color rgba="0.627451 0.627451 0.627451 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0126 0.000249997 -0.0252" rpy="-1.5708 -2.15099e-13 1.86891e-13"/>
+      <geometry>
+        <mesh filename="assets/sts3215_03a__5.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part jaw_base -->
+    <visual>
+      <origin xyz="-0.0125 -2.77556e-17 0.0187" rpy="-3.14159 -2.22056e-28 1.16378e-29"/>
+      <geometry>
+        <mesh filename="assets/jaw_base.stl"/>
+      </geometry>
+      <material name="jaw_base_material">
+        <color rgba="0.231373 0.380392 0.705882 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0125 -2.77556e-17 0.0187" rpy="-3.14159 -2.22056e-28 1.16378e-29"/>
+      <geometry>
+        <mesh filename="assets/jaw_base.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link jaw -->
+  <link name="jaw">
+    <inertial>
+      <origin xyz="0.0290667 0.00651264 0.0182479" rpy="0 0 0"/>
+      <mass value="0.0342247"/>
+      <inertia ixx="9.64314e-06" ixy="-4.53748e-06" ixz="-3.44332e-07" iyy="2.10172e-05" iyz="-9.47284e-08" izz="1.61231e-05"/>
+    </inertial>
+    <!-- Part jaw -->
+    <visual>
+      <origin xyz="-0.00112237 0.0124495 0.0187" rpy="3.14159 -1.18877e-16 -1.48089"/>
+      <geometry>
+        <mesh filename="assets/jaw.stl"/>
+      </geometry>
+      <material name="jaw_material">
+        <color rgba="0.917647 0.917647 0.917647 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.00112237 0.0124495 0.0187" rpy="3.14159 -1.18877e-16 -1.48089"/>
+      <geometry>
+        <mesh filename="assets/jaw.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Joint from jaw_base to jaw -->
+  <joint name="Gripper" type="revolute">
+    <origin xyz="0.0251 -0.01805 -0.0252" rpy="-1.5708 1.5708 0"/>
+    <parent link="jaw_base"/>
+    <child link="jaw"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-1.66071" upper="0.0671691"/>
+  </joint>
+  <!-- Joint from wrist_arm to jaw_base -->
+  <joint name="Roll" type="revolute">
+    <origin xyz="0.0635042 -0.000100007 0.0181449" rpy="-6.80837e-17 -1.5708 0"/>
+    <parent link="wrist_arm"/>
+    <child link="jaw_base"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-1.5708" upper="1.5708"/>
+  </joint>
+  <!-- Joint from distal_arm to wrist_arm -->
+  <joint name="Wrist" type="revolute">
+    <origin xyz="0.13523 -0.00735999 0.000249997" rpy="1.42916e-16 1.63423e-15 6.83216e-13"/>
+    <parent link="distal_arm"/>
+    <child link="wrist_arm"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-1.5708" upper="1.5708"/>
+  </joint>
+  <!-- Joint from proximal_arm to distal_arm -->
+  <joint name="Distal" type="revolute">
+    <origin xyz="0.12212 -0.02986 0.000299995" rpy="-1.42916e-16 -1.69546e-15 -1.5708"/>
+    <parent link="proximal_arm"/>
+    <child link="distal_arm"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-1.5708" upper="1.5708"/>
+  </joint>
+  <!-- Joint from sts3215_03a to proximal_arm -->
+  <joint name="Proximal" type="revolute">
+    <origin xyz="0.03072 0.0174 0.08273" rpy="1.5708 -1.5708 0"/>
+    <parent link="sts3215_03a"/>
+    <child link="proximal_arm"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-1.5708" upper="1.5708"/>
+  </joint>
+  <!-- Joint from base to sts3215_03a -->
+  <joint name="Pan" type="revolute">
+    <origin xyz="0.0146953 -2.273e-17 0.02915" rpy="-1.79714e-16 2.22045e-16 1.46241e-16"/>
+    <parent link="base"/>
+    <child link="sts3215_03a"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-1.5708" upper="1.5708"/>
+  </joint>
+    <!-- Gripper frame (dummy link + fixed joint) -->
+  <link name="gripper_frame_link">
+    <origin xyz="0 0 0" rpy="0 -0 0"/>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+
+  <joint name="gripper_frame_joint" type="fixed">
+    <origin xyz="0 0 -0.098970" rpy="0 0 0"/>
+    <parent link="jaw_base"/>
+    <child link="gripper_frame_link"/>
+    <axis xyz="0 0 0"/>
+  </joint>
+</robot>
