@@ -6,7 +6,7 @@ import time
 def generate_random_goal(arm_reach: float = 0.25):
     r_min, r_max = 0.2, 0.3
 
-    theta = np.random.uniform(0, 2*np.pi)
+    theta = np.random.uniform(-np.pi/2, np.pi/2)
 
     phi_min = 0.2
     phi_max = np.pi * 0.6
@@ -34,7 +34,7 @@ joints_task.set_joints({
     "Roll": 0,
     "Gripper": 0,
 })
-joints_task.configure("joints_regularization", "soft", 1e-5)
+joints_task.configure("joints_regularization", "soft", 1e-2)
 
 total_points = []
 frame = 0
@@ -47,7 +47,7 @@ for x in range(50):
 
     vector = goal - current_pos
     rr.log(f"movement_path", rr.Arrows3D(origins=current_pos, vectors=vector), rr.CoordinateFrame("base"))
-    steps = 5
+    steps = 100
     for step in range(steps):
         rr.set_time("frame", sequence=frame)
         frame += 1

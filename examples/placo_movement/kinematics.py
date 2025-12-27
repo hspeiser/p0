@@ -27,6 +27,7 @@ class RobotKinematics:
 
         # Adding a frame task
         self.effector_task = self.solver.add_position_task(self.end_frame, np.zeros(3))
+        self.effector_task.configure("effector_task", "soft", 1e6)
 
     def _load_collision_pairs(self):
         """Load collision pairs from collisions.json next to the URDF."""
