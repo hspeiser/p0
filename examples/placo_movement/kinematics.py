@@ -51,7 +51,7 @@ class RobotKinematics:
         """Return list of current self-collisions."""
         self.robot.update_kinematics()
         return self.robot.self_collisions()
-
+    
     def get_distances(self):
         """Return minimum distances between collision pairs."""
         self.robot.update_kinematics()
