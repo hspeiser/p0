@@ -21,9 +21,10 @@ class RobotKinematics:
         # Load collision pairs and add avoidance constraint
         if avoid_collisions:
             self._load_collision_pairs()
-            # Add self-collision avoidance constraint to the solver
+            # Add self-collision avoidance constraint to the solver (soft to allow IK to succeed)
+            # The planner will verify paths are collision-free
             self.collision_constraint = self.solver.add_avoid_self_collisions_constraint()
-            self.collision_constraint.configure("collision_avoidance", "hard", 1.0)
+            self.collision_constraint.configure("collision_avoidance", "soft", 1.0)
 
         # Adding a frame task
         self.effector_task = self.solver.add_position_task(self.end_frame, np.zeros(3))
@@ -50,7 +51,7 @@ class RobotKinematics:
     def check_collisions(self):
         """Return list of current self-collisions."""
         self.robot.update_kinematics()
-        return self.robot.self_collisions()
+        return self.robot.self_collisions(True)
 
     def is_collision_free(self, joints: list) -> bool:
         """Check if a joint configuration is collision-free.
@@ -96,9 +97,14 @@ class RobotKinematics:
         self.effector_task.target_world = end_position
         self.robot.update_kinematics()
         # Solving the IK
-        for _ in range(25):
-            self.solver.solve(True)
-            self.robot.update_kinematics()
+        try:
+            for _ in range(25):
+                self.solver.solve(True)
+                self.robot.update_kinematics()
+        except RuntimeError:
+            # QP solver failed (infeasible constraints)
+            return (False, None)
+
         position = self.robot.get_T_world_frame(self.end_frame)[:3, 3]
         residual = np.linalg.norm(end_position - position)
         converged = residual < 0.01

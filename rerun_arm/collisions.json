@@ -1,0 +1,10 @@
+[
+  ["jaw", "base"],
+  ["jaw_base", "base"],
+  ["jaw", "sts3215_03a"],
+  ["jaw_base", "sts3215_03a"],
+  ["distal_arm", "base"],
+  ["distal_arm", "sts3215_03a"],
+  ["wrist_arm", "base"],
+  ["wrist_arm", "sts3215_03a"]
+]

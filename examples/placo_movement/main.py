@@ -1,8 +1,11 @@
 import rerun as rr
 from kinematics import RobotKinematics
 from rerun_render import RerunViewer
+from prm_planner import PRMPlanner
 import numpy as np
-import time
+from pathlib import Path
+
+
 def generate_random_goal(arm_reach: float = 0.25):
     r_min, r_max = 0.2, 0.3
 
@@ -21,6 +24,7 @@ def generate_random_goal(arm_reach: float = 0.25):
 
     return phi, np.array([x, y, z])
 
+
 rr.init("total_view", spawn=True)
 robot_renderer = RerunViewer("../../rerun_arm/robot.urdf")
 kinematics = RobotKinematics("../../rerun_arm", "gripper_frame_link")
@@ -36,25 +40,57 @@ joints_task.set_joints({
 })
 joints_task.configure("joints_regularization", "soft", 1e-2)
 
-total_points = []
+# Create PRM planner with smoother interpolation
+planner = PRMPlanner(num_samples=2000, k_neighbors=15, edge_resolution=5, interpolation_steps=30)
+
+# Set workspace to match goal generation (slightly larger for buffer)
+planner.set_workspace(
+    r_min=0.15, r_max=0.35,      # Goal uses 0.2-0.3, we go wider
+    theta_min=-np.pi/2, theta_max=np.pi/2,
+    phi_min=0.1, phi_max=np.pi * 0.7,  # Goal uses 0.2 to pi*0.6
+    z_offset=0.05
+)
+
+# Try to load existing roadmap, otherwise build new one
+roadmap_path = Path("../../rerun_arm/roadmap.json")
+if not planner.load_roadmap(str(roadmap_path)):
+    planner.build_roadmap(kinematics, verbose=True)
+    planner.save_roadmap(str(roadmap_path))
+
 frame = 0
 for x in range(50):
     frame += 1
     rr.set_time("frame", sequence=frame)
     current_pos = kinematics.get_ee_pos()
     (_, goal) = generate_random_goal()
-    rr.log(f"points", rr.Points3D(goal, colors=[255,255,255], radii=.01), rr.CoordinateFrame("base"))
+    rr.log("points", rr.Points3D(goal, colors=[255, 255, 255], radii=0.01), rr.CoordinateFrame("base"))
 
-    vector = goal - current_pos
-    rr.log(f"movement_path", rr.Arrows3D(origins=current_pos, vectors=vector), rr.CoordinateFrame("base"))
-    steps = 100
-    for step in range(steps):
-        rr.set_time("frame", sequence=frame)
+    # Plan path using joint-space interpolation
+    path = planner.generate_path(kinematics, current_pos, goal)
+
+    if path is None:
+        # Planning failed - mark goal as red and show intended straight line
+        vector = goal - current_pos
+        rr.log("movement_path", rr.Arrows3D(origins=current_pos, vectors=vector, colors=[255, 0, 0]), rr.CoordinateFrame("base"))
+        rr.log("points", rr.Points3D(goal, colors=[255, 0, 0], radii=0.01), rr.CoordinateFrame("base"))
+        print(f"Planning failed for goal {goal}")
+        continue
+
+    # Convert joint path to Cartesian path for visualization
+    cartesian_path = planner.get_cartesian_path(kinematics, path)
+    rr.log("movement_path", rr.LineStrips3D([cartesian_path], colors=[0, 255, 0]), rr.CoordinateFrame("base"))
+
+    # Execute path
+    for joints in path:
         frame += 1
-        new_goal = vector * (1/steps) *  (step + 1) + current_pos
-        (converged, joint_pos) = kinematics.inverse_kinematics(new_goal)
-        robot_renderer.write_joint_positions(joint_pos)
-        if step == steps - 1:
+        rr.set_time("frame", sequence=frame)
+        robot_renderer.write_joint_positions(list(joints))
 
-            color = [0, 255, 0] if converged else [255, 0, 0]
-            rr.log(f"points", rr.Points3D(goal, colors=[0, 255, 0], radii=.01), rr.CoordinateFrame("base"))
+    # Update robot state to final position so next iteration starts from here
+    final_joints = path[-1]
+    for idx, name in enumerate(kinematics.robot.joint_names()):
+        kinematics.robot.set_joint(name, final_joints[idx])
+    kinematics.robot.update_kinematics()
+
+    # Mark goal as green (reached)
+    rr.log("points", rr.Points3D(goal, colors=[0, 255, 0], radii=0.01), rr.CoordinateFrame("base"))
