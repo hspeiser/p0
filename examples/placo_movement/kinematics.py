@@ -51,7 +51,31 @@ class RobotKinematics:
         """Return list of current self-collisions."""
         self.robot.update_kinematics()
         return self.robot.self_collisions()
-    
+
+    def is_collision_free(self, joints: list) -> bool:
+        """Check if a joint configuration is collision-free.
+
+        Saves and restores current robot state.
+        """
+        joint_names = self.robot.joint_names()
+
+        # Save current state
+        saved = [self.robot.get_joint(name) for name in joint_names]
+
+        # Set to test configuration
+        for idx, name in enumerate(joint_names):
+            self.robot.set_joint(name, joints[idx])
+
+        # Check collisions
+        result = len(self.check_collisions()) == 0
+
+        # Restore original state
+        for idx, name in enumerate(joint_names):
+            self.robot.set_joint(name, saved[idx])
+        self.robot.update_kinematics()
+
+        return result
+
     def get_distances(self):
         """Return minimum distances between collision pairs."""
         self.robot.update_kinematics()
