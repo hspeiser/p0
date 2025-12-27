@@ -19,11 +19,12 @@ class RobotKinematics:
         self.effector_task = self.solver.add_position_task(self.end_frame, np.zeros(3))
     # returns array of final position of end frame 
     def forward_kinematics(self, joint_positions):
-        for (idx, joint_name) in enumerate(self.robot.joint_names):
+        for (idx, joint_name) in enumerate(self.robot.joint_names()):
             self.robot.set_joint(joint_name, joint_positions[idx])
         self.robot.update_kinematics()
         return self.robot.get_T_world_frame(self.end_frame)[:3, 3]
-    
+    def get_ee_pos(self):
+        return self.robot.get_T_world_frame(self.end_frame)[:3, 3]
     # returns tuple (converged, joint positions)
     def inverse_kinematics(self, end_position):
         self.effector_task.target_world = end_position
@@ -36,6 +37,6 @@ class RobotKinematics:
         residual = np.linalg.norm(end_position - position)
         converged = residual < 0.01
         joint_positions = []
-        for (name) in (self.robot.joint_names):
+        for (name) in (self.robot.joint_names()):
             joint_positions.append(self.robot.get_joint(name))
         return (converged, joint_positions)
