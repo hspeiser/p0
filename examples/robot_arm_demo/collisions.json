@@ -1,0 +1,11 @@
+[
+  ["base", "distal_arm"],
+  ["base", "wrist_arm"],
+  ["base", "jaw_base"],
+  ["base", "jaw"],
+  ["proximal_arm", "wrist_arm"],
+  ["proximal_arm", "jaw_base"],
+  ["proximal_arm", "jaw"],
+  ["distal_arm", "jaw_base"],
+  ["distal_arm", "jaw"]
+]

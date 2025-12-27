@@ -20,10 +20,9 @@ def generate_random_goal(arm_reach: float = 0.25):
     z = r * np.cos(phi) + 0.05
 
     return phi, np.array([x, y, z])
-rr.init("total_view")
-rr.connect_grpc("rerun+http://172.18.128.1:9876/proxy")
-robot_renderer = RerunViewer("../../rerun_arm/robot.urdf")
-kinematics = RobotKinematics("../../rerun_arm", "gripper_frame_link")
+rr.init("total_view", spawn=True)
+robot_renderer = RerunViewer("rerun_arm/robot.urdf")
+kinematics = RobotKinematics("rerun_arm", "gripper_frame_link")
 total_points = []
 frame = 0
 for x in range(100):
@@ -35,7 +34,7 @@ for x in range(100):
 
     vector = goal - current_pos
     rr.log(f"movement_path", rr.Arrows3D(origins=current_pos, vectors=vector), rr.CoordinateFrame("base"))
-    steps = 100
+    steps = 5
     for step in range(steps):
         rr.set_time("frame", sequence=frame)
         frame += 1
@@ -46,7 +45,3 @@ for x in range(100):
 
             color = [0, 255, 0] if converged else [255, 0, 0]
             rr.log(f"points", rr.Points3D(goal, colors=[0, 255, 0], radii=.01), rr.CoordinateFrame("base"))
-
-    
-    
-    
