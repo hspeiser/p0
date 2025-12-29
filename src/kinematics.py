@@ -95,7 +95,12 @@ class RobotKinematics:
 
     def get_ee_pos(self):
         return self.robot.get_T_world_frame(self.end_frame)[:3, 3]
+    def get_joints(self):
+        joint_names = self.robot.joint_names()
 
+        # Save current state
+        saved = [self.robot.get_joint(name) for name in joint_names]
+        return saved
     # returns tuple (converged, joint positions)
     def inverse_kinematics(self, end_position):
         self.effector_task.target_world = end_position

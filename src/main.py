@@ -48,11 +48,10 @@ joints_task.set_joints({
 })
 joints_task.configure("joints_regularization", "soft", 1e-1)
 
-# Create PRM planner with smoother interpolation
-planner = LinearPlanner(0.01)
-
+planner = LinearPlanner(0.005)
+total_failures = []
 frame = 0
-for x in range(50):
+for x in range(1000):
     frame += 1
     rr.set_time("frame", sequence=frame)
     current_pos = kinematics.get_ee_pos()
@@ -60,20 +59,23 @@ for x in range(50):
     rr.log("points", rr.Points3D(goal, colors=[255, 255, 255], radii=0.01), rr.CoordinateFrame("base"))
 
     # Plan path using joint-space interpolation
-    path = planner.generate_path(kinematics, current_pos, goal)
+    (converged, path) = planner.generate_path(kinematics, current_pos, goal)
 
-    if path is None:
+    if not converged and path != None:
+        cartesian_path = planner.get_cartesian_path(kinematics, path)
+        rr.log("movement_path", rr.LineStrips3D([cartesian_path], colors=[0, 0, 255]), rr.CoordinateFrame("base"))
         # Planning failed - mark goal as red and show intended straight line
         vector = goal - current_pos
         rr.log("movement_path", rr.Arrows3D(origins=current_pos, vectors=vector, colors=[255, 0, 0]), rr.CoordinateFrame("base"))
         rr.log("points", rr.Points3D(goal, colors=[255, 0, 0], radii=0.01), rr.CoordinateFrame("base"))
+        total_failures.append(frame)
         print(f"Planning failed for goal {goal}")
         continue
 
     # Convert joint path to Cartesian path for visualization
     cartesian_path = planner.get_cartesian_path(kinematics, path)
     rr.log("movement_path", rr.LineStrips3D([cartesian_path], colors=[0, 255, 0]), rr.CoordinateFrame("base"))
-
+    print("FRAME", frame)
     # Execute path
     for joints in path:
         frame += 1
@@ -88,3 +90,6 @@ for x in range(50):
 
     # Mark goal as green (reached)
     rr.log("points", rr.Points3D(goal, colors=[0, 255, 0], radii=0.01), rr.CoordinateFrame("base"))
+
+
+print("TOTAL FAILURES: ", len(total_failures))

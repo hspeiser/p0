@@ -18,18 +18,42 @@ class LinearPlanner(PathPlanner):
 
 
     def plan(self, kinematics : RobotKinematics, start_pos: np.ndarray, end_pos: np.ndarray
-            ) -> Optional[List[np.ndarray]]:
+            ) -> Tuple[bool, Optional[List[np.ndarray]]]:
         """Plan a path from start to end position."""
-        distance = np.linalg.norm(start_pos - end_pos)
-        steps = int(np.ceil(distance/ self.max_step_size))
-        step_size = distance / steps
-        step = ((end_pos - start_pos) / distance)  * step_size
+        goal = end_pos
+        start = start_pos
         joint_pos = []
-        
-        for x in range(steps):
-            
-            (_, joints) = kinematics.inverse_kinematics(start_pos + (x + 1)  * (step))
+        x = 0
+        collided = False
+        safe_goal = np.array([0.20, 0, (start_pos[2] + end_pos[2]) / 2])
+        initial_joints = kinematics.get_joints()
+        while True:
+            distance = np.linalg.norm(start - goal)
+            steps = int(np.ceil(distance/ self.max_step_size))
+            step_size = distance / steps
+            step = ((goal - start) / distance)  * step_size
+            (_, joints) = kinematics.inverse_kinematics(start + (x + 1)  * (step))
+            if joints  == None:
+                print("Failed QP")
+                return (False, None)
             joint_pos.append(joints)
             if len(kinematics.check_collisions()) != 0:
-                return None
-        return joint_pos
+                print(f" collisions found, rerouting")
+                kinematics.forward_kinematics(initial_joints)
+                joint_pos = []
+                start = start_pos
+                collided = True
+                goal = safe_goal
+                x = 0
+            if x == steps:
+                if collided:
+                    collided = False
+                    x = 0 
+                    goal = end_pos
+                    start = kinematics.get_ee_pos()
+                    print("avoided collision, now going to end position")
+                    continue
+                print("finsihed safely")
+                return (True, joint_pos)
+            x += 1
+        return (True, joint_pos)
