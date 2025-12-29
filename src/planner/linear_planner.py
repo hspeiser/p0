@@ -25,9 +25,11 @@ class LinearPlanner(PathPlanner):
         step_size = distance / steps
         step = ((end_pos - start_pos) / distance)  * step_size
         joint_pos = []
+        
         for x in range(steps):
             
             (_, joints) = kinematics.inverse_kinematics(start_pos + (x + 1)  * (step))
             joint_pos.append(joints)
-        
+            if len(kinematics.check_collisions()) != 0:
+                return None
         return joint_pos
