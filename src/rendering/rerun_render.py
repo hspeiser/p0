@@ -1,3 +1,4 @@
+from ctypes import Array
 import math
 import numpy as np
 import rerun as rr
@@ -5,7 +6,7 @@ import yourdfpy
 from pathlib import Path
 
 
-def quat_from_axis_angle(axis, angle):
+def quat_from_axis_angle(axis : np.ndarray, angle: float) -> np.ndarray:
     axis = np.asarray(axis, dtype=np.float32)
     norm = np.linalg.norm(axis)
     if norm < 1e-9:
@@ -18,15 +19,15 @@ def quat_from_axis_angle(axis, angle):
     )
 
 
-def quat_from_euler_xyz(rpy):
+def quat_from_euler_xyz(rpy: np.ndarray) -> np.ndarray:
     roll, pitch, yaw = rpy
-    qx = quat_from_axis_angle([1, 0, 0], roll)
-    qy = quat_from_axis_angle([0, 1, 0], pitch)
-    qz = quat_from_axis_angle([0, 0, 1], yaw)
+    qx = quat_from_axis_angle(np.asarray([1, 0, 0]), roll)
+    qy = quat_from_axis_angle(np.asarray([0, 1, 0]), pitch)
+    qz = quat_from_axis_angle(np.asarray([0, 0, 1]), yaw)
     return quat_mul(qz, quat_mul(qy, qx))
 
 
-def quat_mul(q1, q2):
+def quat_mul(q1: np.ndarray, q2: np.ndarray) -> np.ndarray:
     x1, y1, z1, w1 = q1
     x2, y2, z2, w2 = q2
     return np.array([
@@ -38,7 +39,7 @@ def quat_mul(q1, q2):
 
 
 class RerunViewer:
-    def __init__(self, urdf_path):
+    def __init__(self, urdf_path: str):
         self.urdf_path = Path(urdf_path)
         rr.log_file_from_path(str(self.urdf_path), static=True)
         
@@ -51,7 +52,7 @@ class RerunViewer:
             if joint.type in ("revolute", "continuous")
         ]
 
-    def write_joint_positions(self, joint_positions):
+    def write_joint_positions(self, joint_positions : list[float]):
         """Update joint transforms in rerun.
 
         joint_positions: list of angles in radians, one per revolute joint
@@ -88,8 +89,8 @@ class RerunViewer:
             axis = joint.axis.tolist() if joint.axis is not None else [0.0, 0.0, 1.0]
 
             # Compute rotation: origin rotation * axis rotation
-            q_origin = quat_from_euler_xyz(origin_rpy)
-            q_axis = quat_from_axis_angle(axis, angle)
+            q_origin = quat_from_euler_xyz(np.array(origin_rpy))
+            q_axis = quat_from_axis_angle(np.array(axis), angle)
             rotation = quat_mul(q_origin, q_axis)
 
             rr.log(

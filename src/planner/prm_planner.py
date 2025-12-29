@@ -3,7 +3,7 @@ import heapq
 import json
 from pathlib import Path
 from typing import List, Optional, Dict, Tuple
-from planner_interface import PathPlanner
+from .planner_interface import PathPlanner
 
 
 class PRMPlanner(PathPlanner):

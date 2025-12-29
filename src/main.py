@@ -1,11 +1,12 @@
 import rerun as rr
 from kinematics import RobotKinematics
 from rendering.rerun_render import RerunViewer
-from planner.prm_planner import PRMPlanner
+# from planner.prm_planner import PRMPlanner
 import numpy as np
 from pathlib import Path
 import argparse
 parser = argparse.ArgumentParser()
+from planner.linear_planner import LinearPlanner
 parser.add_argument("--connect", action="store_true")
 args = parser.parse_args()
 connect = args.connect
@@ -45,24 +46,10 @@ joints_task.set_joints({
     "Roll": 0,
     "Gripper": 0,
 })
-joints_task.configure("joints_regularization", "soft", 1e-2)
+joints_task.configure("joints_regularization", "soft", 1e-1)
 
 # Create PRM planner with smoother interpolation
-planner = PRMPlanner(num_samples=2000, k_neighbors=15, edge_resolution=5, interpolation_steps=30)
-
-# Set workspace to match goal generation (slightly larger for buffer)
-planner.set_workspace(
-    r_min=0.15, r_max=0.35,      # Goal uses 0.2-0.3, we go wider
-    theta_min=-np.pi/2, theta_max=np.pi/2,
-    phi_min=0.1, phi_max=np.pi * 0.7,  # Goal uses 0.2 to pi*0.6
-    z_offset=0.05
-)
-
-# Try to load existing roadmap, otherwise build new one
-roadmap_path = Path("../../rerun_arm/roadmap.json")
-if not planner.load_roadmap(str(roadmap_path)):
-    planner.build_roadmap(kinematics, verbose=True)
-    planner.save_roadmap(str(roadmap_path))
+planner = LinearPlanner(0.01)
 
 frame = 0
 for x in range(50):

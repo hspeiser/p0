@@ -1,5 +1,5 @@
 import numpy as np
-from planner_interface import PathPlanner
+from .planner_interface import PathPlanner
 from typing import List, Optional
 
 

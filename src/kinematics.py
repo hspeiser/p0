@@ -2,10 +2,14 @@ import placo
 import numpy as np
 import json
 from pathlib import Path
+"""
+primary kinematics wrapper, used for robot inverse kinematics, collision detection, etc. 
 
+
+"""
 
 class RobotKinematics:
-    def __init__(self, urdf_path, end_frame, avoid_collisions=True):
+    def __init__(self, urdf_path : str, end_frame : str, avoid_collisions : bool =True ):
         self.end_frame = end_frame
         self.urdf_path = Path(urdf_path)
 
@@ -48,7 +52,7 @@ class RobotKinematics:
         else:
             print(f"No collisions.json found at {collisions_path}, using default collision pairs")
 
-    def check_collisions(self):
+    def check_collisions(self) -> list[placo.Collision]:
         """Return list of current self-collisions."""
         self.robot.update_kinematics()
         return self.robot.self_collisions(True)
@@ -77,7 +81,7 @@ class RobotKinematics:
 
         return result
 
-    def get_distances(self):
+    def get_distances(self) -> list[placo.Distance]:
         """Return minimum distances between collision pairs."""
         self.robot.update_kinematics()
         return self.robot.distances()
@@ -112,3 +116,30 @@ class RobotKinematics:
         for name in self.robot.joint_names():
             joint_positions.append(self.robot.get_joint(name))
         return (converged, joint_positions)
+    def inverse_kinematics_stateless(self, end_position):
+        joint_names = self.robot.joint_names()
+
+        # Save current state
+        saved = [self.robot.get_joint(name) for name in joint_names]
+        self.effector_task.target_world = end_position
+        self.robot.update_kinematics()
+        # Solving the IK
+        try:
+            for _ in range(25):
+                self.solver.solve(True)
+                self.robot.update_kinematics()
+        except RuntimeError:
+            # QP solver failed (infeasible constraints)
+            return (False, None)
+
+        position = self.robot.get_T_world_frame(self.end_frame)[:3, 3]
+        residual = np.linalg.norm(end_position - position)
+        converged = residual < 0.01
+        joint_positions = []
+        for name in self.robot.joint_names():
+            joint_positions.append(self.robot.get_joint(name))
+        
+        for idx, name in enumerate(joint_names):
+            self.robot.set_joint(name, saved[idx])
+        self.robot.update_kinematics()
+        return  joint_positions
