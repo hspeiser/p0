@@ -1,10 +1,14 @@
 import rerun as rr
 from kinematics import RobotKinematics
-from rerun_render import RerunViewer
-from prm_planner import PRMPlanner
+from rendering.rerun_render import RerunViewer
+from planner.prm_planner import PRMPlanner
 import numpy as np
 from pathlib import Path
-
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--connect", action="store_true")
+args = parser.parse_args()
+connect = args.connect
 
 def generate_random_goal(arm_reach: float = 0.25):
     r_min, r_max = 0.2, 0.3
@@ -25,9 +29,12 @@ def generate_random_goal(arm_reach: float = 0.25):
     return phi, np.array([x, y, z])
 
 
-rr.init("total_view", spawn=True)
-robot_renderer = RerunViewer("../../rerun_arm/robot.urdf")
-kinematics = RobotKinematics("../../rerun_arm", "gripper_frame_link")
+rr.init("total_view", spawn= not connect)
+if connect :
+    rr.connect_grpc("rerun+http://172.18.128.1:9876/proxy")
+    
+robot_renderer = RerunViewer("rerun_arm/robot.urdf")
+kinematics = RobotKinematics("rerun_arm", "gripper_frame_link")
 
 joints_task = kinematics.solver.add_joints_task()
 joints_task.set_joints({
