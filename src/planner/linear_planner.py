@@ -13,8 +13,9 @@ class LinearPlanner(PathPlanner):
     then uses A* to find paths through the roadmap.
     """
 
-    def __init__(self, max_step_size: float):
+    def __init__(self, max_step_size: float, max_reroutes: int = 3):
         self.max_step_size = max_step_size
+        self.max_reroutes = max_reroutes
 
 
     def plan(self, kinematics : RobotKinematics, start_pos: np.ndarray, end_pos: np.ndarray
@@ -25,6 +26,7 @@ class LinearPlanner(PathPlanner):
         joint_pos = []
         x = 0
         collided = False
+        reroutes = 0
         safe_goal = np.array([0.20, 0, (start_pos[2] + end_pos[2]) / 2])
         initial_joints = kinematics.get_joints()
         while True:
@@ -39,6 +41,11 @@ class LinearPlanner(PathPlanner):
             joint_pos.append(joints)
             if len(kinematics.check_collisions()) != 0:
                 print(f" collisions found, rerouting")
+                reroutes += 1
+                failed_path = list(joint_pos)
+                if reroutes > self.max_reroutes:
+                    print("Exceeded reroute limit; marking as failure")
+                    return (False, failed_path if failed_path else None)
                 kinematics.forward_kinematics(initial_joints)
                 joint_pos = []
                 start = start_pos
